@@ -5,7 +5,6 @@ set -o nounset
 
 CONFIGDIR=/ops/shared/config
 
-CONSULCONFIGDIR=/etc/consul.d
 NOMADCONFIGDIR=/etc/nomad.d
 HADOOP_VERSION=hadoop-2.7.7
 HADOOPCONFIGDIR=/usr/local/$HADOOP_VERSION/etc/hadoop
@@ -16,14 +15,17 @@ DOCKER_BRIDGE_IP_ADDRESS=$(/usr/local/bin/sockaddr eval 'GetInterfaceIP "docker0
 
 CLOUD="$1"
 SERVER_COUNT="$2"
-RETRY_JOIN="$3"
-nomad_sha="$4"
+nomad_sha="$3"
 
 # Consul
-sed -i "s/SERVER_COUNT/$SERVER_COUNT/g" $CONFIGDIR/consul.json
-sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/consul.json
-sudo cp $CONFIGDIR/consul.json $CONSULCONFIGDIR
-sudo cp $CONFIGDIR/consul_$CLOUD.service /etc/systemd/system/consul.service
+CONSUL_SRC=/ops/shared/consul
+CONSUL_DEST=/etc/consul.d
+
+sed "s/SERVER_COUNT/$SERVER_COUNT/g" "$CONSUL_SRC/server.json" > /tmp/server.json
+sudo mv /tmp/server.json "$CONSUL_DEST/server.json"
+sudo cp "$CONSUL_SRC/base.json" "$CONSUL_DEST/"
+sudo cp "$CONSUL_SRC/retry_$CLOUD.json" "$CONSUL_DEST/"
+sudo cp "$CONSUL_SRC/consul_$CLOUD.service" /etc/systemd/system/consul.service
 
 sudo systemctl enable consul.service
 sudo systemctl start  consul.service
