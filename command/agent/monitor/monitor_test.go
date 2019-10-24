@@ -13,11 +13,11 @@ import (
 func TestMonitor_Start(t *testing.T) {
 	t.Parallel()
 
-	logger := log.NewMultiSink(&log.LoggerOptions{
+	logger := log.NewInterceptLogger(&log.LoggerOptions{
 		Level: log.Error,
 	})
 
-	m := New(512, logger, log.SinkOptions{
+	m := New(512, logger, &log.LoggerOptions{
 		Level: log.Debug,
 	})
 
@@ -41,11 +41,11 @@ func TestMonitor_Start(t *testing.T) {
 func TestMonitor_DroppedMessages(t *testing.T) {
 	t.Parallel()
 
-	logger := log.NewMultiSink(&log.LoggerOptions{
+	logger := log.NewInterceptLogger(&log.LoggerOptions{
 		Level: log.Warn,
 	})
 
-	m := New(5, logger, log.SinkOptions{
+	m := New(5, logger, &log.LoggerOptions{
 		Level: log.Debug,
 	})
 
@@ -59,5 +59,4 @@ func TestMonitor_DroppedMessages(t *testing.T) {
 	}
 
 	assert.Equal(t, 1, m.droppedCount)
-
 }

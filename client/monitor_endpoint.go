@@ -68,7 +68,7 @@ func (m *Monitor) monitor(conn io.ReadWriteCloser) {
 	defer close(stopCh)
 	defer cancel()
 
-	monitor := monitor.New(512, m.c.logger, log.SinkOptions{
+	monitor := monitor.New(512, m.c.logger, &log.LoggerOptions{
 		Level:      logLevel,
 		JSONFormat: false,
 	})

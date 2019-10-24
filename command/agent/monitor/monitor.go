@@ -8,15 +8,15 @@ import (
 
 type Monitor struct {
 	sync.Mutex
-	sink         *log.Sink
-	logger       log.MultiSinkLogger
+	sink         log.SinkAdapter
+	logger       log.InterceptLogger
 	logCh        chan []byte
 	index        int
 	droppedCount int
 	bufSize      int
 }
 
-func New(buf int, logger log.MultiSinkLogger, opts log.SinkOptions) *Monitor {
+func New(buf int, logger log.InterceptLogger, opts *log.LoggerOptions) *Monitor {
 	sw := &Monitor{
 		logger:  logger,
 		logCh:   make(chan []byte, buf),
@@ -24,13 +24,10 @@ func New(buf int, logger log.MultiSinkLogger, opts log.SinkOptions) *Monitor {
 		bufSize: buf,
 	}
 
-	sink := log.NewSink(&log.SinkOptions{
-		Level:      opts.Level,
-		JSONFormat: opts.JSONFormat,
-		Output:     sw,
-	})
-
+	opts.Output = sw
+	sink := log.NewSinkAdapter(opts)
 	sw.sink = sink
+
 	return sw
 }
 
