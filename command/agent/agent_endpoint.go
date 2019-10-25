@@ -228,10 +228,10 @@ func (s *HTTPServer) AgentMonitor(resp http.ResponseWriter, req *http.Request) (
 	// Create an ouput that gets flushed on every write
 	output := ioutils.NewWriteFlusher(resp)
 
-	// Create a channel that decodes the results
+	// create an error channel to handle errors
 	errCh := make(chan HTTPCodedError, 2)
 
-	// stream the response
+	// stream response
 	go func() {
 		defer cancel()
 
