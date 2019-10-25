@@ -86,7 +86,6 @@ OUTER:
 			if msg.Error != nil {
 				t.Fatalf("Got error: %v", msg.Error.Error())
 			}
-
 			received += string(msg.Payload)
 			if strings.Contains(received, expected) {
 				require.Nil(p2.Close())
